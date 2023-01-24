@@ -57,14 +57,15 @@ async function getFakeHash(): Promise<string> {
     return fakeHashCache;
 }
 
-export async function compare(password: string, hash: string, shaWrapped: boolean) {
+export async function compare(password: string, hash: string, shaWrapped: boolean): Promise<boolean> {
+    console.log("here");
     const fakeHash: string = await getFakeHash();
 
     if (shaWrapped) {
         password = crypto.createHash('sha512').update(password).digest('hex');
     }
 
-    return await forkChildAsync({ type: 'compare', password: password, hash: hash || fakeHash });
+    return await forkChildAsync({ type: 'compare', password: password, hash: hash || fakeHash }) as boolean;
 }
 
 async function hashPassword(msg: Message1): Promise<string> {
