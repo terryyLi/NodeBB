@@ -58,7 +58,6 @@ async function getFakeHash(): Promise<string> {
 }
 
 export async function compare(password: string, hash: string, shaWrapped: boolean): Promise<boolean> {
-    console.log("here");
     const fakeHash: string = await getFakeHash();
 
     if (shaWrapped) {
