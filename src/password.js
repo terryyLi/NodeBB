@@ -115,22 +115,22 @@ function tryMethod(method, msg) {
         }
     });
 }
+function compareHelper(msg) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        return yield bcrypt.compare(String(msg.password || ''), String(msg.hash || ''));
+    });
+}
 // child process
 process.on('message', (msg) => {
-    function compare(msg) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // The next line calls a function in a module that has not been updated to TS yet
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            return yield bcrypt.compare(String(msg.password || ''), String(msg.hash || ''));
-        });
-    }
     if (msg.type === 'hash') {
         tryMethod(hashPassword, msg)
             .then()
             .catch(err => console.log(err));
     }
     else if (msg.type === 'compare') {
-        tryMethod(compare, msg).catch()
+        tryMethod(compareHelper, msg).catch()
             .then()
             .catch(err => console.log(err));
     }

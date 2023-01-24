@@ -91,23 +91,24 @@ async function tryMethod(method: (Message) => Promise<boolean> | Promise<string>
     }
 }
 
+async function compareHelper(msg: Message2): Promise<boolean> {
+    // The next line calls a function in a module that has not been updated to TS yet
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    return await bcrypt.compare(String(msg.password || ''), String(msg.hash || '')) as boolean;
+}
+
 // child process
 process.on('message', (msg: Message2) => {
-    async function compare(msg: Message2): Promise<boolean> {
-        // The next line calls a function in a module that has not been updated to TS yet
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        return await bcrypt.compare(String(msg.password || ''), String(msg.hash || '')) as boolean;
-    }
-
     if (msg.type === 'hash') {
         tryMethod(hashPassword, msg)
             .then()
             .catch(err => console.log(err));
     } else if (msg.type === 'compare') {
-        tryMethod(compare, msg).catch()
+        tryMethod(compareHelper, msg).catch()
             .then()
             .catch(err => console.log(err));
     }
 });
+
 
 
